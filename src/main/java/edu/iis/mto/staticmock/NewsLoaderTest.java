@@ -2,6 +2,7 @@ package edu.iis.mto.staticmock;
 
 import edu.iis.mto.staticmock.reader.NewsReader;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -11,6 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.core.IsCollectionContaining.hasItem;
+import static org.junit.Assert.assertThat;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -79,5 +83,13 @@ public class NewsLoaderTest {
         };
         mockStatic(NewsReaderFactory.class);
         when(NewsReaderFactory.getReader(readerType)).thenReturn(testDataReader);
+    }
+
+    @Test
+    public void loadNewsCheckPublicMessages() throws Exception {
+        PublishableNewsAnalyzer news = (PublishableNewsAnalyzer) newsLoader.loadNews();
+        assertThat(news.publicNews, hasItem(publicInfo1.getContent()));
+        assertThat(news.publicNews, not(hasItem(subscribedInfo1.getContent())));
+        assertThat(news.publicNews, not(hasItem(subscribedInfo2.getContent())));
     }
 }
