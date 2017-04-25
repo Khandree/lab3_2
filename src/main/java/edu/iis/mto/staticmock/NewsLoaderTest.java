@@ -17,9 +17,8 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest( {ConfigurationLoader.class, NewsReaderFactory.class, PublishableNews.class} )
@@ -103,5 +102,12 @@ public class NewsLoaderTest {
         assertThat(news.subscribedNews.get(subscribedInfo1.getContent()), is(equalTo(subscribedInfo1.getSubscriptionType())));
         assertThat(news.subscribedNews.keySet(), hasItem(subscribedInfo2.getContent()));
         assertThat(news.subscribedNews.get(subscribedInfo2.getContent()), is(equalTo(subscribedInfo2.getSubscriptionType())));
+    }
+
+    @Test
+    public void loadNewsCheckNewsReaderFactoryIsCalledWithCorrectParameter() throws Exception {
+        newsLoader.loadNews();
+        verifyStatic( times(1));
+        NewsReaderFactory.getReader(readerType);
     }
 }
