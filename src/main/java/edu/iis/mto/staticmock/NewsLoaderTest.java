@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
 import static org.powermock.api.mockito.PowerMockito.mock;
@@ -91,5 +93,15 @@ public class NewsLoaderTest {
         assertThat(news.publicNews, hasItem(publicInfo1.getContent()));
         assertThat(news.publicNews, not(hasItem(subscribedInfo1.getContent())));
         assertThat(news.publicNews, not(hasItem(subscribedInfo2.getContent())));
+    }
+
+    @Test
+    public void loadNewsCheckSubscribedMessages() throws Exception {
+        PublishableNewsAnalyzer news = (PublishableNewsAnalyzer) newsLoader.loadNews();
+        assertThat(news.subscribedNews.keySet(), not(hasItem(publicInfo1.getContent())));
+        assertThat(news.subscribedNews.keySet(), hasItem(subscribedInfo1.getContent()));
+        assertThat(news.subscribedNews.get(subscribedInfo1.getContent()), is(equalTo(subscribedInfo1.getSubscriptionType())));
+        assertThat(news.subscribedNews.keySet(), hasItem(subscribedInfo2.getContent()));
+        assertThat(news.subscribedNews.get(subscribedInfo2.getContent()), is(equalTo(subscribedInfo2.getSubscriptionType())));
     }
 }
